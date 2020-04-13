@@ -8,6 +8,12 @@ const appointmentsRepository = new AppointmentsRepository();
 
 // POST http://localhost:3333/appointments
 
+appointmentsRouter.get('/', (request, response) => {
+    const appointments = appointmentsRepository.all();
+
+    return response.json(appointments);
+});
+
 appointmentsRouter.post('/', (request, response) => {
     const { provider, date } = request.body;
 
