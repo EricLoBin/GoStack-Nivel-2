@@ -4,8 +4,7 @@
         "node": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "airbnb-base"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -24,17 +23,17 @@
             "error",
             4
         ],
-        "linebreak-style": [
+        "import/extensions": [
             "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
+            "ignorePackages",
+            {
+                "ts": "never"
+            }
         ]
+    },
+    "settings": {
+        "import/resolver": {
+            "typescript": {}
+        }
     }
 }
