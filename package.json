@@ -1,0 +1,14 @@
+{
+  "name": "GoStack-Nivel-2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/EricLoBin/GoStack-Nivel-2.git",
+  "author": "EricLoBin <ekilobin@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}
