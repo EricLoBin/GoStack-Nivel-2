@@ -16,7 +16,7 @@ appointmentsRouter.get('/', async (request, response) => {
     return response.json(appointments);
 });
 
-appointmentsRouter.post('/', (request, response) => {
+appointmentsRouter.post('/', async (request, response) => {
     try {
         const { provider, date } = request.body;
 
