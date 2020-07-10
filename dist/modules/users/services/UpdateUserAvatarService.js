@@ -39,24 +39,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var typeorm_1 = require("typeorm");
 var path_1 = __importDefault(require("path"));
 var fs_1 = __importDefault(require("fs"));
-var upload_1 = __importDefault(require("../../../config/upload"));
-var AppError_1 = __importDefault(require("../../../shared/errors/AppError"));
-var User_1 = __importDefault(require("../entities/User"));
+var upload_1 = __importDefault(require("@config/upload"));
+var AppError_1 = __importDefault(require("@shared/errors/AppError"));
 var UpdateUserAvatarService = /** @class */ (function () {
-    function UpdateUserAvatarService() {
+    function UpdateUserAvatarService(usersRepository) {
+        this.usersRepository = usersRepository;
     }
     UpdateUserAvatarService.prototype.execute = function (_a) {
         var user_id = _a.user_id, avatarFilename = _a.avatarFilename;
         return __awaiter(this, void 0, void 0, function () {
-            var usersRepository, user, userAvatarFilePath, userAvaterExists;
+            var user, userAvatarFilePath, userAvaterExists;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        usersRepository = typeorm_1.getRepository(User_1.default);
-                        return [4 /*yield*/, usersRepository.findOne(user_id)];
+                    case 0: return [4 /*yield*/, this.usersRepository.findById(user_id)];
                     case 1:
                         user = _b.sent();
                         if (!user) {
@@ -74,7 +71,7 @@ var UpdateUserAvatarService = /** @class */ (function () {
                         _b.label = 4;
                     case 4:
                         user.avatar = avatarFilename;
-                        return [4 /*yield*/, usersRepository.save(user)];
+                        return [4 /*yield*/, this.usersRepository.save(user)];
                     case 5:
                         _b.sent();
                         return [2 /*return*/, user];

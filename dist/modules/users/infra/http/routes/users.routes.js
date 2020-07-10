@@ -39,39 +39,52 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcryptjs_1 = require("bcryptjs");
-var AppError_1 = __importDefault(require("@shared/errors/AppError"));
-var CreateUserService = /** @class */ (function () {
-    function CreateUserService(usersRepository) {
-        this.usersRepository = usersRepository;
-    }
-    CreateUserService.prototype.execute = function (_a) {
-        var name = _a.name, email = _a.email, password = _a.password;
-        return __awaiter(this, void 0, void 0, function () {
-            var checkUserExists, hashedPassword, user;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.usersRepository.findByEmail(email)];
-                    case 1:
-                        checkUserExists = _b.sent();
-                        if (checkUserExists) {
-                            throw new AppError_1.default('Email addres already used.');
-                        }
-                        return [4 /*yield*/, bcryptjs_1.hash(password, 8)];
-                    case 2:
-                        hashedPassword = _b.sent();
-                        return [4 /*yield*/, this.usersRepository.create({
-                                name: name,
-                                email: email,
-                                password: hashedPassword,
-                            })];
-                    case 3:
-                        user = _b.sent();
-                        return [2 /*return*/, user];
-                }
-            });
-        });
-    };
-    return CreateUserService;
-}());
-exports.default = CreateUserService;
+var express_1 = require("express");
+var multer_1 = __importDefault(require("multer"));
+var upload_1 = __importDefault(require("@config/upload"));
+var UsersRepository_1 = __importDefault(require("@modules/users/infra/typeorm/repositories/UsersRepository"));
+var CreateUserService_1 = __importDefault(require("@modules/users/services/CreateUserService"));
+var UpdateUserAvatarService_1 = __importDefault(require("@modules/users/services/UpdateUserAvatarService"));
+var ensureAuthenticated_1 = __importDefault(require("../middlewares/ensureAuthenticated"));
+var UsersRouter = express_1.Router();
+var upload = multer_1.default(upload_1.default);
+// POST http://localhost:3333/users
+UsersRouter.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, name, email, password, usersRepository, createUser, user;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = request.body, name = _a.name, email = _a.email, password = _a.password;
+                usersRepository = new UsersRepository_1.default();
+                createUser = new CreateUserService_1.default(usersRepository);
+                return [4 /*yield*/, createUser.execute({
+                        name: name,
+                        email: email,
+                        password: password,
+                    })];
+            case 1:
+                user = _b.sent();
+                delete user.password;
+                return [2 /*return*/, response.json(user)];
+        }
+    });
+}); });
+UsersRouter.patch('/avatar', ensureAuthenticated_1.default, upload.single('avatar'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var usersRepository, UpdateUserAvatar, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                usersRepository = new UsersRepository_1.default();
+                UpdateUserAvatar = new UpdateUserAvatarService_1.default(usersRepository);
+                return [4 /*yield*/, UpdateUserAvatar.execute({
+                        user_id: request.user.id,
+                        avatarFilename: request.file.filename,
+                    })];
+            case 1:
+                user = _a.sent();
+                delete user.password;
+                return [2 /*return*/, response.json(user)];
+        }
+    });
+}); });
+exports.default = UsersRouter;

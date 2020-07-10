@@ -39,39 +39,43 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcryptjs_1 = require("bcryptjs");
-var AppError_1 = __importDefault(require("@shared/errors/AppError"));
-var CreateUserService = /** @class */ (function () {
-    function CreateUserService(usersRepository) {
-        this.usersRepository = usersRepository;
+var typeorm_1 = require("typeorm");
+var Appointment_1 = __importDefault(require("../entities/Appointment"));
+var AppointmentsRepository = /** @class */ (function () {
+    function AppointmentsRepository() {
+        this.ormRepository = typeorm_1.getRepository(Appointment_1.default);
     }
-    CreateUserService.prototype.execute = function (_a) {
-        var name = _a.name, email = _a.email, password = _a.password;
+    AppointmentsRepository.prototype.findByDate = function (date) {
         return __awaiter(this, void 0, void 0, function () {
-            var checkUserExists, hashedPassword, user;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.usersRepository.findByEmail(email)];
+            var findAppointment;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.ormRepository.findOne({
+                            where: { date: date },
+                        })];
                     case 1:
-                        checkUserExists = _b.sent();
-                        if (checkUserExists) {
-                            throw new AppError_1.default('Email addres already used.');
-                        }
-                        return [4 /*yield*/, bcryptjs_1.hash(password, 8)];
-                    case 2:
-                        hashedPassword = _b.sent();
-                        return [4 /*yield*/, this.usersRepository.create({
-                                name: name,
-                                email: email,
-                                password: hashedPassword,
-                            })];
-                    case 3:
-                        user = _b.sent();
-                        return [2 /*return*/, user];
+                        findAppointment = _a.sent();
+                        return [2 /*return*/, findAppointment];
                 }
             });
         });
     };
-    return CreateUserService;
+    AppointmentsRepository.prototype.create = function (_a) {
+        var provider_id = _a.provider_id, date = _a.date;
+        return __awaiter(this, void 0, void 0, function () {
+            var appointment;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        appointment = this.ormRepository.create({ provider_id: provider_id, date: date });
+                        return [4 /*yield*/, this.ormRepository.save(appointment)];
+                    case 1:
+                        _b.sent();
+                        return [2 /*return*/, appointment];
+                }
+            });
+        });
+    };
+    return AppointmentsRepository;
 }());
-exports.default = CreateUserService;
+exports.default = AppointmentsRepository;

@@ -35,43 +35,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcryptjs_1 = require("bcryptjs");
-var AppError_1 = __importDefault(require("@shared/errors/AppError"));
-var CreateUserService = /** @class */ (function () {
-    function CreateUserService(usersRepository) {
-        this.usersRepository = usersRepository;
+var typeorm_1 = require("typeorm");
+var AddAvatarFieldToUsers1587136462779 = /** @class */ (function () {
+    function AddAvatarFieldToUsers1587136462779() {
     }
-    CreateUserService.prototype.execute = function (_a) {
-        var name = _a.name, email = _a.email, password = _a.password;
+    AddAvatarFieldToUsers1587136462779.prototype.up = function (queryRunner) {
         return __awaiter(this, void 0, void 0, function () {
-            var checkUserExists, hashedPassword, user;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.usersRepository.findByEmail(email)];
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, queryRunner.addColumn('users', new typeorm_1.TableColumn({
+                            name: 'avatar',
+                            type: 'varchar',
+                            isNullable: true,
+                        }))];
                     case 1:
-                        checkUserExists = _b.sent();
-                        if (checkUserExists) {
-                            throw new AppError_1.default('Email addres already used.');
-                        }
-                        return [4 /*yield*/, bcryptjs_1.hash(password, 8)];
-                    case 2:
-                        hashedPassword = _b.sent();
-                        return [4 /*yield*/, this.usersRepository.create({
-                                name: name,
-                                email: email,
-                                password: hashedPassword,
-                            })];
-                    case 3:
-                        user = _b.sent();
-                        return [2 /*return*/, user];
+                        _a.sent();
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    return CreateUserService;
+    AddAvatarFieldToUsers1587136462779.prototype.down = function (queryRunner) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, queryRunner.dropColumn('users', 'avatar')];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return AddAvatarFieldToUsers1587136462779;
 }());
-exports.default = CreateUserService;
+exports.default = AddAvatarFieldToUsers1587136462779;

@@ -39,39 +39,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcryptjs_1 = require("bcryptjs");
-var AppError_1 = __importDefault(require("@shared/errors/AppError"));
-var CreateUserService = /** @class */ (function () {
-    function CreateUserService(usersRepository) {
-        this.usersRepository = usersRepository;
-    }
-    CreateUserService.prototype.execute = function (_a) {
-        var name = _a.name, email = _a.email, password = _a.password;
-        return __awaiter(this, void 0, void 0, function () {
-            var checkUserExists, hashedPassword, user;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.usersRepository.findByEmail(email)];
-                    case 1:
-                        checkUserExists = _b.sent();
-                        if (checkUserExists) {
-                            throw new AppError_1.default('Email addres already used.');
-                        }
-                        return [4 /*yield*/, bcryptjs_1.hash(password, 8)];
-                    case 2:
-                        hashedPassword = _b.sent();
-                        return [4 /*yield*/, this.usersRepository.create({
-                                name: name,
-                                email: email,
-                                password: hashedPassword,
-                            })];
-                    case 3:
-                        user = _b.sent();
-                        return [2 /*return*/, user];
-                }
-            });
-        });
-    };
-    return CreateUserService;
-}());
-exports.default = CreateUserService;
+var express_1 = require("express");
+var date_fns_1 = require("date-fns");
+var AppointmentsRepository_1 = __importDefault(require("@modules/appointments/infra/typeorm/repositories/AppointmentsRepository"));
+var CreateAppointmentService_1 = __importDefault(require("@modules/appointments/services/CreateAppointmentService"));
+var ensureAuthenticated_1 = __importDefault(require("@modules/users/infra/http/middlewares/ensureAuthenticated"));
+var appointmentsRouter = express_1.Router();
+appointmentsRouter.use(ensureAuthenticated_1.default);
+// POST http://localhost:3333/appointments
+// appointmentsRouter.get('/', async (request, response) => {
+//     const appointments = await appointmentsRepository.find();
+//     return response.json(appointments);
+// });
+appointmentsRouter.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, provider_id, date, parsedDate, appointmentsRepository, createAppointment, appointment;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = request.body, provider_id = _a.provider_id, date = _a.date;
+                parsedDate = date_fns_1.parseISO(date);
+                appointmentsRepository = new AppointmentsRepository_1.default();
+                createAppointment = new CreateAppointmentService_1.default(appointmentsRepository);
+                return [4 /*yield*/, createAppointment.execute({
+                        date: parsedDate,
+                        provider_id: provider_id,
+                    })];
+            case 1:
+                appointment = _b.sent();
+                return [2 /*return*/, response.json(appointment)];
+        }
+    });
+}); });
+exports.default = appointmentsRouter;

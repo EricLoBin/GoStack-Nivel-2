@@ -39,39 +39,62 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcryptjs_1 = require("bcryptjs");
-var AppError_1 = __importDefault(require("@shared/errors/AppError"));
-var CreateUserService = /** @class */ (function () {
-    function CreateUserService(usersRepository) {
-        this.usersRepository = usersRepository;
+var typeorm_1 = require("typeorm");
+var User_1 = __importDefault(require("../entities/User"));
+var UsersRepository = /** @class */ (function () {
+    function UsersRepository() {
+        this.ormRepository = typeorm_1.getRepository(User_1.default);
     }
-    CreateUserService.prototype.execute = function (_a) {
-        var name = _a.name, email = _a.email, password = _a.password;
+    UsersRepository.prototype.findById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var checkUserExists, hashedPassword, user;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.usersRepository.findByEmail(email)];
+            var user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.ormRepository.findOne(id)];
                     case 1:
-                        checkUserExists = _b.sent();
-                        if (checkUserExists) {
-                            throw new AppError_1.default('Email addres already used.');
-                        }
-                        return [4 /*yield*/, bcryptjs_1.hash(password, 8)];
-                    case 2:
-                        hashedPassword = _b.sent();
-                        return [4 /*yield*/, this.usersRepository.create({
-                                name: name,
-                                email: email,
-                                password: hashedPassword,
-                            })];
-                    case 3:
-                        user = _b.sent();
+                        user = _a.sent();
                         return [2 /*return*/, user];
                 }
             });
         });
     };
-    return CreateUserService;
+    UsersRepository.prototype.findByEmail = function (email) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.ormRepository.findOne({
+                            where: { email: email },
+                        })];
+                    case 1:
+                        user = _a.sent();
+                        return [2 /*return*/, user];
+                }
+            });
+        });
+    };
+    UsersRepository.prototype.create = function (userData) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        user = this.ormRepository.create(userData);
+                        return [4 /*yield*/, this.ormRepository.save(user)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, user];
+                }
+            });
+        });
+    };
+    UsersRepository.prototype.save = function (user) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.ormRepository.save(user)];
+            });
+        });
+    };
+    return UsersRepository;
 }());
-exports.default = CreateUserService;
+exports.default = UsersRepository;

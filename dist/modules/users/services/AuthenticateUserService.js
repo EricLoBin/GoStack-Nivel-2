@@ -39,24 +39,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var typeorm_1 = require("typeorm");
 var bcryptjs_1 = require("bcryptjs");
 var jsonwebtoken_1 = require("jsonwebtoken");
-var auth_1 = __importDefault(require("../../../config/auth"));
-var AppError_1 = __importDefault(require("../../../shared/errors/AppError"));
-var User_1 = __importDefault(require("../entities/User"));
+var auth_1 = __importDefault(require("@config/auth"));
+var AppError_1 = __importDefault(require("@shared/errors/AppError"));
 var AuthenticateUserService = /** @class */ (function () {
-    function AuthenticateUserService() {
+    function AuthenticateUserService(usersRepository) {
+        this.usersRepository = usersRepository;
     }
     AuthenticateUserService.prototype.execute = function (_a) {
         var email = _a.email, password = _a.password;
         return __awaiter(this, void 0, void 0, function () {
-            var userRepository, user, passwordMatched, _b, secret, expiresIn, token;
+            var user, passwordMatched, _b, secret, expiresIn, token;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0:
-                        userRepository = typeorm_1.getRepository(User_1.default);
-                        return [4 /*yield*/, userRepository.findOne({ where: { email: email } })];
+                    case 0: return [4 /*yield*/, this.usersRepository.findByEmail(email)];
                     case 1:
                         user = _c.sent();
                         if (!user) {

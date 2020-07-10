@@ -40,34 +40,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var date_fns_1 = require("date-fns");
-var typeorm_1 = require("typeorm");
-var AppError_1 = __importDefault(require("../../../shared/errors/AppError"));
-var AppointmentsRepository_1 = __importDefault(require("../repositories/AppointmentsRepository"));
+var AppError_1 = __importDefault(require("@shared/errors/AppError"));
 var CreateAppointmentService = /** @class */ (function () {
-    function CreateAppointmentService() {
+    function CreateAppointmentService(appointmentsRepository) {
+        this.appointmentsRepository = appointmentsRepository;
     }
     CreateAppointmentService.prototype.execute = function (_a) {
         var date = _a.date, provider_id = _a.provider_id;
         return __awaiter(this, void 0, void 0, function () {
-            var appointmentsRepository, appointmentDate, findAppointmentInSameDate, appointment;
+            var appointmentDate, findAppointmentInSameDate, appointment;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        appointmentsRepository = typeorm_1.getCustomRepository(AppointmentsRepository_1.default);
                         appointmentDate = date_fns_1.startOfHour(date);
-                        return [4 /*yield*/, appointmentsRepository.findByDate(appointmentDate)];
+                        return [4 /*yield*/, this.appointmentsRepository.findByDate(appointmentDate)];
                     case 1:
                         findAppointmentInSameDate = _b.sent();
                         if (findAppointmentInSameDate) {
                             throw new AppError_1.default('This appointment is already booked');
                         }
-                        appointment = appointmentsRepository.create({
-                            provider_id: provider_id,
-                            date: appointmentDate,
-                        });
-                        return [4 /*yield*/, appointmentsRepository.save(appointment)];
+                        return [4 /*yield*/, this.appointmentsRepository.create({
+                                provider_id: provider_id,
+                                date: appointmentDate,
+                            })];
                     case 2:
-                        _b.sent();
+                        appointment = _b.sent();
                         return [2 /*return*/, appointment];
                 }
             });
